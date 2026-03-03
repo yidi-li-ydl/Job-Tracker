@@ -1,59 +1,48 @@
 # JobTrackr
 
-A job search tracker with a Kanban board interface for managing prospects through the hiring pipeline.
+A Kanban-style job search tracker built with React, Express, and PostgreSQL. Prospects are organized into columns by pipeline status and can be created, edited, and deleted through a clean card-based interface.
 
 ## Tech Stack
 
-- **Frontend**: React (Vite) with Tailwind CSS and shadcn/ui components
-- **Backend**: Express.js with TypeScript
-- **Database**: PostgreSQL with Drizzle ORM
-- **Routing**: wouter (frontend), Express (backend)
-- **State**: TanStack React Query
+- **Frontend**: React 18 (Vite), Tailwind CSS, shadcn/ui, TanStack React Query, wouter
+- **Backend**: Express.js (TypeScript), Drizzle ORM, node-postgres
+- **Database**: PostgreSQL
 
-## Project Structure
+## File Structure
 
 ```
-client/src/
-  pages/home.tsx              - Main Kanban board page with columns per status
-  components/
-    prospect-card.tsx         - Compact prospect card with edit/delete, opens edit dialog on click
-    add-prospect-form.tsx     - Form dialog for adding new prospects
-    edit-prospect-form.tsx    - Form dialog for editing existing prospects (all fields including status)
-    ui/                       - shadcn/ui component library
-
+shared/schema.ts              - Database table definition, Zod validation, TypeScript types
 server/
-  index.ts                    - Express app setup
-  db.ts                       - PostgreSQL connection pool
-  routes.ts                   - API routes (GET/POST/PATCH/DELETE /api/prospects)
-  storage.ts                  - Database storage interface
-  prospect-helpers.ts         - Pure functions: getNextStatus, validateProspect, isTerminalStatus
-
-shared/
-  schema.ts                   - Drizzle schema + Zod validation + TypeScript types
+  index.ts                    - Express app bootstrap, middleware, server start
+  db.ts                       - PostgreSQL connection pool (Drizzle)
+  routes.ts                   - API route handlers (GET/POST/PATCH/DELETE)
+  storage.ts                  - Storage interface + DatabaseStorage class
+  prospect-helpers.ts         - Pure helper functions (getNextStatus, validateProspect, isTerminalStatus)
+client/src/
+  App.tsx                     - Root component, routing, providers
+  pages/home.tsx              - Kanban board with 7 status columns
+  components/
+    prospect-card.tsx         - Card component with edit/delete actions
+    add-prospect-form.tsx     - Dialog form for creating prospects
+    edit-prospect-form.tsx    - Dialog form for editing prospects
+    ui/                       - shadcn/ui primitives
 ```
 
-## Database Schema
+## Database
 
-Single `prospects` table with fields: id, company_name, role_title, job_url, status, interest_level, notes, created_at.
+Single `prospects` table: id, company_name, role_title, job_url, status, interest_level, notes, created_at.
 
-Valid statuses: Bookmarked, Applied, Phone Screen, Interviewing, Offer, Rejected, Withdrawn
-Valid interest levels: High, Medium, Low
+- **Statuses**: Bookmarked, Applied, Phone Screen, Interviewing, Offer, Rejected, Withdrawn
+- **Interest levels**: High, Medium, Low
 
-## Key Design Decisions
+## API
 
-- **Kanban board layout** - 7 columns (one per status), horizontally scrollable, cards sorted within columns
-- **Editable prospects** - clicking a card opens an edit dialog to change any field including status
-- **prospect-helpers.ts** exports pure functions for testability
-- Pipeline logic: getNextStatus advances status linearly, skips terminal statuses (Offer, Rejected, Withdrawn)
-
-## API Routes
-
-- GET /api/prospects - all prospects, ordered by created_at DESC
-- POST /api/prospects - create prospect (validates with Zod)
-- PATCH /api/prospects/:id - partial update, validates status/interestLevel
-- DELETE /api/prospects/:id - delete prospect
+- `GET /api/prospects` - list all, ordered by created_at DESC
+- `POST /api/prospects` - create (validated with Zod)
+- `PATCH /api/prospects/:id` - partial update with field validation
+- `DELETE /api/prospects/:id` - delete
 
 ## Running
 
-- `npm run dev` starts both frontend and backend
-- `npm run db:push` pushes schema to database
+- `npm run dev` starts the full app (Express + Vite)
+- `npm run db:push` syncs schema to database
