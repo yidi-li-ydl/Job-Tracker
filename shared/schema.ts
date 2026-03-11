@@ -22,6 +22,7 @@ export const prospects = pgTable("prospects", {
   status: text("status").notNull().default("Bookmarked"),
   interestLevel: text("interest_level").notNull().default("Medium"),
   salary: text("salary"),
+  interviewDates: text("interview_dates").array(),
   notes: text("notes"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -39,6 +40,10 @@ export const insertProspectSchema = createInsertSchema(prospects).omit({
     (val) => !val || /^\d+(\.\d+)?$/.test(val.replace(/[,$\s]/g, "")),
     { message: "Salary must be a numeric value" }
   ),
+  interviewDates: z.array(z.string().refine(
+    (val) => !isNaN(new Date(val).getTime()),
+    { message: "Invalid date format" }
+  )).optional().nullable(),
   notes: z.string().optional().nullable(),
 });
 
