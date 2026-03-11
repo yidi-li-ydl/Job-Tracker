@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertProspectSchema, STATUSES, INTEREST_LEVELS } from "@shared/schema";
@@ -23,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus, X } from "lucide-react";
 
 interface EditProspectFormProps {
   prospect: Prospect;
@@ -42,9 +43,12 @@ export function EditProspectForm({ prospect, onSuccess }: EditProspectFormProps)
       status: prospect.status as InsertProspect["status"],
       interestLevel: prospect.interestLevel as InsertProspect["interestLevel"],
       salary: prospect.salary ?? "",
+      interviewDates: prospect.interviewDates ?? [],
       notes: prospect.notes ?? "",
     },
   });
+
+  const [newInterviewDate, setNewInterviewDate] = useState("");
 
   const mutation = useMutation({
     mutationFn: async (data: InsertProspect) => {
@@ -176,6 +180,67 @@ export function EditProspectForm({ prospect, onSuccess }: EditProspectFormProps)
                   data-testid="input-edit-salary"
                 />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="interviewDates"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Interview Dates (optional)</FormLabel>
+              <div className="space-y-2">
+                {(field.value ?? []).map((date, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <Input
+                      type="datetime-local"
+                      value={date}
+                      readOnly
+                      className="flex-1 text-sm"
+                      data-testid={`input-edit-interview-date-${index}`}
+                    />
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="ghost"
+                      className="h-8 w-8 shrink-0"
+                      onClick={() => {
+                        const updated = (field.value ?? []).filter((_, i) => i !== index);
+                        field.onChange(updated);
+                      }}
+                      data-testid={`button-edit-remove-interview-${index}`}
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
+                ))}
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="datetime-local"
+                    value={newInterviewDate}
+                    onChange={(e) => setNewInterviewDate(e.target.value)}
+                    className="flex-1 text-sm"
+                    data-testid="input-edit-new-interview-date"
+                  />
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="outline"
+                    className="h-8 w-8 shrink-0"
+                    onClick={() => {
+                      if (newInterviewDate) {
+                        field.onChange([...(field.value ?? []), newInterviewDate]);
+                        setNewInterviewDate("");
+                      }
+                    }}
+                    data-testid="button-edit-add-interview-date"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
+              </div>
               <FormMessage />
             </FormItem>
           )}

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import type { Prospect } from "@shared/schema";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Trash2, Pencil, Flame, ThumbsUp, Minus, DollarSign } from "lucide-react";
+import { ExternalLink, Trash2, Pencil, Flame, ThumbsUp, Minus, DollarSign, Calendar } from "lucide-react";
+import { format } from "date-fns";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -112,6 +113,21 @@ export function ProspectCard({ prospect }: { prospect: Prospect }) {
             </span>
           )}
         </div>
+
+        {prospect.interviewDates && prospect.interviewDates.length > 0 && (
+          <div className="space-y-0.5" data-testid={`interview-dates-${prospect.id}`}>
+            {prospect.interviewDates.map((date, index) => (
+              <span
+                key={index}
+                className="inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 mr-2"
+                data-testid={`text-interview-date-${prospect.id}-${index}`}
+              >
+                <Calendar className="w-3 h-3" />
+                {isNaN(new Date(date).getTime()) ? date : format(new Date(date), "MMM d, yyyy h:mm a")}
+              </span>
+            ))}
+          </div>
+        )}
 
         {prospect.jobUrl && (
           <a

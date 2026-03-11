@@ -39,6 +39,19 @@ export function validateProspect(data: Record<string, unknown>): { valid: boolea
     }
   }
 
+  if (data.interviewDates !== undefined && data.interviewDates !== null) {
+    if (!Array.isArray(data.interviewDates)) {
+      errors.push("Interview dates must be an array");
+    } else {
+      for (const date of data.interviewDates) {
+        if (typeof date !== "string" || isNaN(new Date(date).getTime())) {
+          errors.push("Each interview date must be a valid date-time string");
+          break;
+        }
+      }
+    }
+  }
+
   return { valid: errors.length === 0, errors };
 }
 
