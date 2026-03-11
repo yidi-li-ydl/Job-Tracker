@@ -22,6 +22,117 @@ describe("prospect creation validation", () => {
   });
 });
 
+describe("salary validation", () => {
+  test("accepts a plain numeric salary", () => {
+    const result = validateProspect({
+      companyName: "Google",
+      roleTitle: "PM",
+      salary: "120000",
+    });
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  test("accepts salary with commas", () => {
+    const result = validateProspect({
+      companyName: "Google",
+      roleTitle: "PM",
+      salary: "120,000",
+    });
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  test("accepts salary with dollar sign", () => {
+    const result = validateProspect({
+      companyName: "Google",
+      roleTitle: "PM",
+      salary: "$120,000",
+    });
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  test("accepts salary with decimals", () => {
+    const result = validateProspect({
+      companyName: "Google",
+      roleTitle: "PM",
+      salary: "120000.50",
+    });
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  test("accepts empty salary", () => {
+    const result = validateProspect({
+      companyName: "Google",
+      roleTitle: "PM",
+      salary: "",
+    });
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  test("accepts null salary", () => {
+    const result = validateProspect({
+      companyName: "Google",
+      roleTitle: "PM",
+      salary: null,
+    });
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  test("accepts undefined salary", () => {
+    const result = validateProspect({
+      companyName: "Google",
+      roleTitle: "PM",
+    });
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  test("rejects non-numeric salary", () => {
+    const result = validateProspect({
+      companyName: "Google",
+      roleTitle: "PM",
+      salary: "abc",
+    });
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("Salary must be a numeric value");
+  });
+
+  test("rejects salary with letters mixed in", () => {
+    const result = validateProspect({
+      companyName: "Google",
+      roleTitle: "PM",
+      salary: "120k",
+    });
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("Salary must be a numeric value");
+  });
+
+  test("rejects non-string salary", () => {
+    const result = validateProspect({
+      companyName: "Google",
+      roleTitle: "PM",
+      salary: 120000,
+    });
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("Salary must be a numeric value");
+  });
+});
+
 describe("interview date validation", () => {
   test("accepts valid interview dates", () => {
     const result = validateProspect({

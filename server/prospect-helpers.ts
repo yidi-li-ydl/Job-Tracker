@@ -39,6 +39,13 @@ export function validateProspect(data: Record<string, unknown>): { valid: boolea
     }
   }
 
+  if (data.salary !== undefined && data.salary !== null && data.salary !== "") {
+    const salaryStr = typeof data.salary === "string" ? data.salary.replace(/[,$\s]/g, "") : "";
+    if (!salaryStr || !/^\d+(\.\d+)?$/.test(salaryStr)) {
+      errors.push("Salary must be a numeric value");
+    }
+  }
+
   if (data.interviewDates !== undefined && data.interviewDates !== null) {
     if (!Array.isArray(data.interviewDates)) {
       errors.push("Interview dates must be an array");
