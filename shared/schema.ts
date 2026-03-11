@@ -35,7 +35,10 @@ export const insertProspectSchema = createInsertSchema(prospects).omit({
   status: z.enum(STATUSES).default("Bookmarked"),
   interestLevel: z.enum(INTEREST_LEVELS).default("Medium"),
   jobUrl: z.string().optional().nullable(),
-  salary: z.string().optional().nullable(),
+  salary: z.string().optional().nullable().refine(
+    (val) => !val || /^\d+(\.\d+)?$/.test(val.replace(/[,$\s]/g, "")),
+    { message: "Salary must be a numeric value" }
+  ),
   notes: z.string().optional().nullable(),
 });
 
