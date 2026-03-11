@@ -87,7 +87,7 @@ function KanbanColumn({
                 className={!interestFilter ? "font-semibold" : ""}
                 data-testid={`filter-all-${statusSlug}`}
               >
-                All Levels
+                All
               </DropdownMenuItem>
               {INTEREST_LEVELS.map((level) => {
                 const Icon = interestIcons[level];
